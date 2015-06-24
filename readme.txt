@@ -9,9 +9,6 @@ javac -cp ".:/home/github/ds-ia2/lib/commons-cli-1.3.jar" -d /home/github/ds-ia2
 Before running applications you have to change working forlder to folder with class files using command:
 cd /home/github/ds-ia2
 
-To run application type command:
-java -cp ".:lib/commons-cli-1.3.jar:bin" Node -m | -s -sf <filename> [-b] [-d] [-pp <ip:port>] [-t <mm/dd/yyyy h:mm:ss.fff>] [-td <milliseconds>] [-th <milliseconds>] [-l <logfile>]
-
 usage: java Node -m | -s -sf <filename> [-b] [-pp <ip:port>] [-t
             <mm/dd/yyyy h:mm:ss.fff>] [-td <milliseconds>] [-d
             <milliseconds>] [-l <logfile>]
@@ -44,19 +41,17 @@ Easiest way that allows to run applications on completely separated separated co
 docker run -i -t -p 23000:23000 liquidmind/openjdk-7-jdk_git_screen_ia2
 
 After that you can run Client in each container using command:
-java -cp ".:lib/commons-cli-1.3.jar:bin" Node -s 127.0.0.1:23000 -l "log/log_slave_23000.txt"
+java -cp "lib/commons-cli-1.3.jar:bin" Node -s -b --ip:port "127.0.0.1:23000" -l "logs/log_slave_23000.txt"
+Where 23000 is port for this client.
 
-. Take into consideration that in this case each instance will have its own IP address and you need to look at IP address of each machine (Server shows its IP after start). And use IP address of server machine while running clients.
+By default new client after start will get random time difference within -10 and +10 seconds (-10.000 and +10.000 milliseconds) from system time. If you want to specify time difference manually use parameter "-td <milliseconds>". For example command
+java -cp "lib/commons-cli-1.3.jar:bin" Node -s -b --ip:port "127.0.0.1:23000" -l "logs/log_slave_23000.txt" -td "1000"
+will run slave with time 1 second (1000 milliseconds) ahead of system time.
 
-To test applications you should:
-1. If you want to recompile files you can use command:
-javac -d /home/github/ds-ia1/bin /home/github/ds-ia1/src/*.java
-2. Before running applications you have to change working forlder to folder with class files using command:
-cd /home/github/ds-ia1/bin
-3. Run "java Server [<SERVER_PORT>]" command. It will run server application on default 2333 port (or <SERVER_PORT> if specified) that will show IP to connect to. If server and client are running on the same machine/container "localhost" may be used instead of the server IP.
-4. Run "java Client <SERVER_IP> [<SERVER_PORT>]" command where <SERVER_IP> and <SERVER_PORT> is IP and port of the server from the previous step (or "localhost" without quotes in case of Server and Client located on the same computer)
-5. You may run as many clients as you want executing command from step 2 multiple times.
-6. You may enter message in any client or at the server. Message will be echoed to each client except those who sent message.
-7. To exit server or clients enter "exit" or simply close an application.
+To run slave directly from docker console you can use following command:
+docker run -i -t -p 23000:23000 liquidmind/openjdk-7-jdk_git_screen_ia2 java -cp "./home/github/ds-ia2/lib/commons-cli-1.3.jar::./home/github/ds-ia2/bin" Node -s -b --ip:port "127.0.0.1:23000" -l "./home/github/ds-ia2/logs/log_slave_23000.txt" -td "1000"
 
-P.S. In case if you want to run already compiled applications you should use =java version "1.7.0_79".
+And you can run server node with the command:
+docker run -i -t -p 2333:2333 liquidmind/openjdk-7-jdk_git_screen_ia2 java -cp "./home/github/ds-ia2/lib/commons-cli-1.3.jar::./home/github/ds-ia2/bin" Node -m -b -l "./home/github/ds-ia2/log/log_master.txt" -td "1000" -slavesfile "./home/github/ds-ia2/src/slaves.txt"
+
+File with list of the slaves servers is located at "/home/github/ds-ia2/src/slaves.txt" and contains 10 slave nodes on local IP 127.0.0.1 and ports from 23000 to 23009.
