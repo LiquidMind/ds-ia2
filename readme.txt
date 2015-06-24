@@ -53,9 +53,17 @@ will run slave with time 1 second (1000 milliseconds) ahead of system time.
 5. To run slave directly from docker console you can use following command:
 docker run -i -t -p 23000:23000/udp liquidmind/openjdk-7-jdk_git_screen_ia2 java -cp "./home/github/ds-ia2/bin/commons-cli-1.3.jar::./home/github/ds-ia2/bin" Node -s -b --ip:port "127.0.0.1:23000" -l "./home/github/ds-ia2/log/log_slave_23000.txt" -td "1000"
 
+You need to change 23000 to 230001, 23002, etc. while running multiple instances of slave nodes. Otherwise docker won't bind instances on the same ports.
+
 And you can run server node with the command:
 docker run -i -t -p 2333:2333/udp liquidmind/openjdk-7-jdk_git_screen_ia2 java -cp "./home/github/ds-ia2/lib/commons-cli-1.3.jar::./home/github/ds-ia2/bin" Node -m -b -l "./home/github/ds-ia2/log/log_master.txt" -td "1000" -slavesfile  "./home/github/ds-ia2/src/slaves.txt" -pp 127.0.0.1:2333
 
 6. File with list of the slaves servers is located at "/home/github/ds-ia2/src/slaves.txt" and contains 10 slave nodes on IP 192.168.56.102 and ports from 23000 to 23009.
 
 7. If you want to watch logs you can tonnel it to awk or some other tool.
+
+8. Both master and slave modes have internal notion of current syncronization round. Therefore for testing purposes it's better to restart slaves and master together. Otherwise slaves won't return response unless their current synchronization round will be the same as master's synchronization round.
+
+9. There can be the case when threshold (that is 1000ms default) is less than time difference between any of two nodes. In this case no synchronization will be done and you need to restart server node using larger threshold.
+
+It's complicated solution therefore in case of any questions or misunderstanding just ask me: oleg.iskra@gmail.com
