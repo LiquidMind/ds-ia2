@@ -1,4 +1,5 @@
 Name of the image is: liquidmind/openjdk-7-jdk_git_screen_ia2
+To download it use command: "docker pull liquidmind/openjdk-7-jdk_git_screen_ia2"
 
 Sources are in the folder /home/github/ds-ia2/src
 Executable classes files are in folder /home/github/ds-ia2/bin
