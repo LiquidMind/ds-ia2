@@ -39,7 +39,7 @@ public class Node {
   static SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss.SSS");
 
   // default commandline syntax
-  static String cmdLineSyntax = "java Node -m | -s -sf <filename> [-b] [-pp <ip:port>] [-t <mm/dd/yyyy h:mm:ss.fff>] [-td <milliseconds>] [-d <milliseconds>] [-l <logfile>]";
+  static String cmdLineSyntax = "java Node -m | -s -sf <filename> [-b] [-d] [-pp <ip:port>] [-t <mm/dd/yyyy h:mm:ss.fff>] [-td <milliseconds>] [-t <milliseconds>] [-l <logfile>]";
   // Helper class to print default help about all parametrs in organized way
   static HelpFormatter helpFormatter = new HelpFormatter();
   // Parsed date
@@ -161,9 +161,14 @@ public class Node {
             .longOpt("background")
             .build();
     
-    Option debugOpt = Option.builder("debug")
+    Option debugOpt = Option.builder("d")
             .desc("run node in debug mode")
             .longOpt("debug")
+            .build();
+    
+    Option helpOpt = Option.builder("h")
+            .desc("show appliction's help")
+            .longOpt("help")
             .build();
     
     // add options
@@ -204,7 +209,7 @@ public class Node {
                 .argName("milliseconds")
                 .build();
         
-        Option thresholdOpt = Option.builder("d")
+        Option thresholdOpt = Option.builder("th")
                 .desc("threshold used in the fault tolerant average (default is 1000ms)")
                 .longOpt("threshold")
                 .hasArgs()
@@ -562,7 +567,7 @@ public class Node {
     } catch (IOException e) {
       log("Error reading data from file. File may be inaccessible.\n");
     } catch (MissingOptionException e) {
-      log(e.getMessage());
+      log(e.getMessage() + "\n");
       // automatically generate the help statement
       helpFormatter.printHelp(cmdLineSyntax, options);
     } catch (EmptySlavesFileException e) {
